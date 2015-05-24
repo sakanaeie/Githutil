@@ -1,0 +1,19 @@
+{
+	"repositories": [
+		{
+			"type": "pear",
+			"url": "http://pear.php.net/"
+		}
+	],
+	"require": {
+		"knplabs/github-api": "~1.4",
+		"monolog/monolog": "1.10.*",
+		"pear-pear.php.net/Mail": "1.2.*",
+		"pear-pear.php.net/Net_SMTP": ">=1.4.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Githutil\\": "app/"
+		}
+	}
+}
