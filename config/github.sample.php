@@ -7,7 +7,7 @@ define('GITHUB_ACCOUNT_NAME', 'fuga');
 define('GITHUB_TARGET_PR_PATTERN_IN_TITLE', '/\[prefix\]/i');
 
 // このパターンがコメントにあるとき、このPRはレビュー完了したとする
-define('GITHUB_PERMIT_PR_PATTERN_IN_COMMENT', '/(:\+1:)|(\[LGTM\])/');
+define('GITHUB_PERMIT_PR_PATTERN_IN_COMMENT', '/^:\+1:|\[LGTM\]/');
 
 // このパターンがコメントにあるとき、このPRのレビューokをリセットする
 define('GITHUB_RESET_PR_PATTERN_IN_COMMENT', '/:0:/');
