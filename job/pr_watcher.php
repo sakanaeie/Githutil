@@ -54,14 +54,16 @@ foreach ($pr_arr as $pr_number => $pr) {
 
 		if (!isset($saved_comment_id_info[$type]) or false === array_search($content['id'], $saved_comment_id_info[$type])) {
 			// 保存済みでないとき
-			if ($comment['is_new']) {
+			$is_deco = ($comment['is_new'] or false !== array_search(GITHUB_SHOW_URL_PATTERN_IN_COMMENT, $comment['emo']));
+
+			if ($is_deco) {
 				$mail_body .= '(*) ';
 			}
 			$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], $pr['title'], $pr['user']['login']);
-			if ($comment['is_new']) {
-				$mail_body .= sprintf("%s\n", $content['html_url']);
+			if ($is_deco) {
+				$mail_body .= sprintf("%s\n", $pr['html_url']);
 			}
-			$mail_body .= sprintf("%s (%s)\n", trim($content['body'], $content['user']['login']));
+			$mail_body .= sprintf("%s (%s)\n", trim($content['body']), $content['user']['login']);
 			$mail_body .= "----------------------------------------\n";
 		}
 	}

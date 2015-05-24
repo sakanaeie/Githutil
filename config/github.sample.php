@@ -11,3 +11,6 @@ define('GITHUB_PERMIT_PR_PATTERN_IN_COMMENT', '/^:\+1:|\[LGTM\]/');
 
 // このパターンがコメントにあるとき、このPRのレビューokをリセットする
 define('GITHUB_RESET_PR_PATTERN_IN_COMMENT', '/:0:/');
+
+// このパターンがコメントにあるとき、URLを表示させる
+define('GITHUB_SHOW_URL_PATTERN_IN_COMMENT', ':bow:');

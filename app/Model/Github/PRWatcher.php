@@ -105,11 +105,16 @@ class PRWatcher
 				}
 			}
 
+			// emoticonをすべて取得する
+			$emo = [];
+			preg_match('/:[^\s]+:/', $comment['body'], $emo);
+
 			$return_arr[] = [
 				'is_new'        => $is_new,
 				'review_status' => $review_status,
 				'type'          => $type,
 				'content'       => $comment,
+				'emo'           => $emo,
 			];
 
 			$is_new = false;
