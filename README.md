@@ -18,4 +18,5 @@
 
 ```crontab
 *	*	*	*	*	php <PATH>/Githutil/job/pr_watcher.php
+0	10	*	*	1-5	php <PATH>/Githutil/job/pr_list.php
 ```
