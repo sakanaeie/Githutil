@@ -1,0 +1,9 @@
+# 設定
+config/github.php
+config/gmail.php
+
+# composer
+vendor/
+
+# storage
+storage/
