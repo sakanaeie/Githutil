@@ -6,7 +6,7 @@
 
 namespace Githutil\Model\Github;
 
-class GithubEmoticon
+class EmoConv
 {
 	const SKYPE = [
 		':+1:'    => '(y)',

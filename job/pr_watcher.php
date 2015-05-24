@@ -71,7 +71,7 @@ if ('' !== $mail_body) {
 		GMAIL_ACCOUNT_NAME,
 		GMAIL_PASSWORD,
 		GMAIL_SUBJECT,
-		\Githutil\Model\Github\GithubEmoticon::toSkype($mail_body),
+		\Githutil\Model\Github\EmoConv::toSkype($mail_body),
 		GMAIL_TO,
 		GMAIL_FROM
 	);
