@@ -30,8 +30,8 @@ $merged_pr_number_arr = array_diff(array_keys($saved_pr_info), array_keys($pr_ar
 foreach ($saved_pr_info as $pr_number => $pr) {
 	if (false !== array_search($pr_number, $merged_pr_number_arr)) {
 		// マージ済みであるとき
-		$mail_body .= sprintf("(beer) Merged *%s*, author:%s\n", $pr['title'], $pr['user']);
-		$mail_body .= "\n----------------------------------------\n";
+		$mail_body .= sprintf("(beer) Merged %s (%s)\n", $pr['title'], $pr['user']);
+		$mail_body .= "----------------------------------------\n";
 	}
 }
 
@@ -57,10 +57,12 @@ foreach ($pr_arr as $pr_number => $pr) {
 			if ($comment['is_new']) {
 				$mail_body .= '(*) ';
 			}
-			$mail_body .= sprintf("(+%s) *%s*, %s < %s\n", $comment['review_status'], $pr['title'], $pr['user']['login'], $content['user']['login']);
-			$mail_body .= sprintf("%s\n\n", $content['html_url']);
-			$mail_body .= sprintf("%s\n\n", trim($content['body']));
-			$mail_body .= "\n----------------------------------------\n";
+			$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], $pr['title'], $pr['user']['login']);
+			if ($comment['is_new']) {
+				$mail_body .= sprintf("%s\n", $content['html_url']);
+			}
+			$mail_body .= sprintf("%s (%s)\n", trim($content['body'], $content['user']['login']));
+			$mail_body .= "----------------------------------------\n";
 		}
 	}
 }
@@ -77,5 +79,6 @@ if ('' !== $mail_body) {
 	);
 }
 
+// 保存する
 $client->savePR($pr_arr);
 $client->saveCommentId($all_comment_arr);
