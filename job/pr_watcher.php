@@ -31,7 +31,7 @@ foreach ($saved_pr_info as $pr_number => $pr) {
 	if (false !== array_search($pr_number, $merged_pr_number_arr)) {
 		// マージ済みであるとき
 		$mail_body .= sprintf("(beer) Merged %s (%s)\n", $pr['title'], $pr['user']);
-		$mail_body .= "----------------------------------------\n";
+		$mail_body .= "--------------------------------------------------------------------------------\n";
 	}
 }
 
@@ -47,24 +47,21 @@ foreach ($pr_arr as $pr_number => $pr) {
 		$type    = $comment['type'];
 		$content = $comment['content'];
 
-		if (false !== strpos($content['user']['login'], 'jenkinsbot')) {
-			// ジェンキンスポットのときは飛ばす
-			continue;
-		}
-
 		if (!isset($saved_comment_id_info[$type]) or false === array_search($content['id'], $saved_comment_id_info[$type])) {
 			// 保存済みでないとき
 			$is_deco = ($comment['is_new'] or false !== array_search(GITHUB_SHOW_URL_PATTERN_IN_COMMENT, $comment['emo']));
 
 			if ($is_deco) {
 				$mail_body .= '(*) ';
+			} else {
+				$mail_body .= '(mail) ';
 			}
 			$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], $pr['title'], $pr['user']['login']);
 			if ($is_deco) {
 				$mail_body .= sprintf("%s\n", $pr['html_url']);
 			}
 			$mail_body .= sprintf("%s (%s)\n", trim($content['body']), $content['user']['login']);
-			$mail_body .= "----------------------------------------\n";
+			$mail_body .= "--------------------------------------------------------------------------------\n";
 		}
 	}
 }

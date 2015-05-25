@@ -91,6 +91,11 @@ class PRWatcher
 		$review_status = 0;
 		$return_arr    = [];
 		foreach ($comment_arr as $comment) {
+			if (false !== strpos($comment['user']['login'], 'jenkinsbot')) {
+				// ジェンキンスポットのときは飛ばす
+				continue;
+			}
+
 			if (isset($comment['diff_hunk'])) {
 				// PR内のファイルに対するものであるとき
 				$type = 'file';
