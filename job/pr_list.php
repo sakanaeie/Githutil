@@ -28,7 +28,7 @@ foreach ($pr_arr as $pr) {
 
 // メールを送信する
 if ('' !== $mail_body) {
-	$mail_body = "(bear) github pull requrest list (bear)\n" . $mail_body;
+	$mail_body = "(clock) github pull requrest list (clock)\n\n" . $mail_body;
 	\Githutil\Infrastructure\Gmail::send(
 		GMAIL_ACCOUNT_NAME,
 		GMAIL_PASSWORD,
