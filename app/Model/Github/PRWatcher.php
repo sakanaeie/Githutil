@@ -39,6 +39,32 @@ class PRWatcher
 	}
 
 	/**
+	 * PRしてないブランチを取得する
+	 *
+	 * @return string[] $return_arr ブランチ名
+	 */
+	public function getNotPullRequestBranches()
+	{
+		$br_arr = $this->client
+			->api('repository')
+			->branches($this->repo_owner, $this->repo_name);
+
+		$pr_arr = $this->client
+			->api('pull_request')
+			->all($this->repo_owner, $this->repo_name);
+
+		$pr_branch_name_arr = array_column(array_column($pr_arr, 'head'), 'ref');
+		$return_arr = [];
+		foreach ($br_arr as $br) {
+			if ('master' !== $br['name'] and !in_array($br['name'], $pr_branch_name_arr)) {
+				$return_arr[] = $br['name'];
+			}
+		}
+
+		return $return_arr;
+	}
+
+	/**
 	 * PRを取得する
 	 *
 	 * @return array $return_arr GithubAPI-PRのレスポンスから、不要なPRを除去したもの
