@@ -4,7 +4,7 @@
  * Monologのラッパ
  */
 
-namespace Githutil\Model;
+namespace Githutil\Infrastructure;
 
 use \Monolog\Logger as MonoLogger;
 use \Monolog\Handler\RotatingFileHandler;
@@ -31,5 +31,50 @@ class Logger
 		}
 
 		return self::$log;
+	}
+
+	public static function build($args)
+	{
+		return call_user_func_array('sprintf', $args);
+	}
+
+	public static function debug()
+	{
+		self::$log->debug(self::build(func_get_args()));
+	}
+
+	public static function info()
+	{
+		self::$log->info(self::build(func_get_args()));
+	}
+
+	public static function notice()
+	{
+		self::$log->notice(self::build(func_get_args()));
+	}
+
+	public static function warning()
+	{
+		self::$log->warning(self::build(func_get_args()));
+	}
+
+	public static function error()
+	{
+		self::$log->error(self::build(func_get_args()));
+	}
+
+	public static function critical()
+	{
+		self::$log->critical(self::build(func_get_args()));
+	}
+
+	public static function alert()
+	{
+		self::$log->alert(self::build(func_get_args()));
+	}
+
+	public static function emergency()
+	{
+		self::$log->emergency(self::build(func_get_args()));
 	}
 }
