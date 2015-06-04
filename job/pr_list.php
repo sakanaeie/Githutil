@@ -2,6 +2,8 @@
 
 require_once 'bootstrap.php';
 
+use \Githutil\Infrastructure\Logger;
+
 // 引数を確認する
 if (!isset($argv[1])) {
 	exit("第一引数はレポジトリのオーナー名\n");
@@ -29,12 +31,19 @@ foreach ($pr_arr as $pr) {
 // メールを送信する
 if ('' !== $mail_body) {
 	$mail_body = "(clock) github pull requrest list (clock)\n\n" . $mail_body;
-	\Githutil\Infrastructure\Gmail::send(
-		GMAIL_ACCOUNT_NAME,
-		GMAIL_PASSWORD,
-		GMAIL_SUBJECT,
-		\Githutil\Model\Github\EmoConv::toSkype($mail_body),
-		GMAIL_TO,
-		GMAIL_FROM
-	);
+	try {
+		$send_status = \Githutil\Infrastructure\Gmail::send(
+			GMAIL_ACCOUNT_NAME,
+			GMAIL_PASSWORD,
+			GMAIL_SUBJECT,
+			\Githutil\Model\Github\EmoConv::toSkype($mail_body),
+			GMAIL_TO,
+			GMAIL_FROM
+		);
+		if (true !== $send_status) {
+			Logger::info($send_status->toString());
+		}
+	} catch (\Exception $e) {
+		Logger::error($e->getMessage());
+	}
 }

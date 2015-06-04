@@ -31,8 +31,10 @@ class Gmail
 		// 大変遺憾ながら、一旦一部エラーを無視させる
 		$e_level = error_reporting();
 		error_reporting($e_level & ~E_STRICT & ~E_DEPRECATED);
-		$smtp = \Mail::factory('smtp',  $params);
-		$smtp->send($to,  $headers,  $body);
+		$smtp   = \Mail::factory('smtp',  $params);
+		$result = $smtp->send($to,  $headers,  $body);
 		error_reporting($e_level);
+
+		return $result;
 	}
 }
