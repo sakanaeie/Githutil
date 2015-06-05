@@ -16,7 +16,7 @@ $repo_name  = $argv[2];
 
 try {
 	// PRを取得する
-	$client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $repo_owner, $repo_name) ;
+	$client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $repo_owner, $repo_name);
 	$pr_arr = $client->getPullRequests();
 
 	// 保存済みPR、コメントidを取得する

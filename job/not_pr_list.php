@@ -15,7 +15,7 @@ $repo_owner = $argv[1];
 $repo_name  = $argv[2];
 
 // PRしてないブランチを取得する
-$client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $repo_owner, $repo_name) ;
+$client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $repo_owner, $repo_name);
 try {
 	$br_arr = $client->getNotPullRequestBranches();
 } catch (\Exception $e) {
@@ -24,7 +24,7 @@ try {
 
 // メールを送信する
 if (0 < count($br_arr)) {
-	$mail_body  = "(tumbleweed) github branch list (NotInPR) (tumbleweed)\n";
+	$mail_body  = "(tumbleweed) github branch list (Not In PR) (tumbleweed)\n";
 	$mail_body .= "https://github.com/${repo_owner}/${repo_name}/branches\n";
 	foreach ($br_arr as $br) {
 		$mail_body .= "* {$br}\n";

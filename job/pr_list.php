@@ -15,7 +15,7 @@ $repo_owner = $argv[1];
 $repo_name  = $argv[2];
 
 // PRを取得する
-$client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $repo_owner, $repo_name) ;
+$client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $repo_owner, $repo_name);
 try {
 	$pr_arr = $client->getPullRequests();
 } catch (\Exception $e) {
