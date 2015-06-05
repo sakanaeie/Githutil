@@ -20,16 +20,21 @@ try {
 	$pr_arr = $client->getPullRequests();
 
 	// 保存済みPR、コメントidを取得する
-	$saved_pr_info         = $client->getSavedPR();
+	$saved_pr_number_arr   = $client->getSavedPRNumber();
 	$saved_comment_id_info = $client->getSavedCommentId();
 
 	// マージ済みPR検知し、メール本文を作成する
 	$mail_body = '';
-	$merged_pr_number_arr = array_diff(array_keys($saved_pr_info), array_keys($pr_arr));
-	foreach ($saved_pr_info as $pr_number => $pr) {
+	$merged_pr_number_arr = array_diff($saved_pr_number_arr, array_keys($pr_arr));
+	foreach ($saved_pr_number_arr as $pr_number) {
 		if (false !== array_search($pr_number, $merged_pr_number_arr)) {
-			// マージ済みであるとき
-			$mail_body .= sprintf("(beer) Merged %s (%s)\n", $pr['title'], $pr['user']);
+			$pr = $client->getOnePullRequest($pr_number);
+			if (true === $pr['merged']) {
+				$state = '(beer) merged';
+			} else {
+				$state = '(coffee) ' . $pr['state'] . ' (not merge)';
+			}
+			$mail_body .= sprintf("%s %s (%s)\n", $state, $pr['title'], $pr['user']['login']);
 			$mail_body .= "--------------------------------------------------------------------------------\n";
 		}
 	}
@@ -67,7 +72,7 @@ try {
 
 	// 保存する
 	// (メール送信したのにPEAR-MAILが例外を投げ、連投される事故があるため、先に保存)
-	$client->savePR($pr_arr);
+	$client->savePRNumber($pr_arr);
 	$client->saveCommentId($all_comment_arr);
 
 	// メールを送信する

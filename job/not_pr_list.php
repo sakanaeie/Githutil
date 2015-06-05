@@ -24,7 +24,7 @@ try {
 
 // メールを送信する
 if (0 < count($br_arr)) {
-	$mail_body  = "(tumbleweed) github branch list (Not In PR) (tumbleweed)\n";
+	$mail_body  = "(tumbleweed) github branch list (not in PR) (tumbleweed)\n";
 	$mail_body .= "https://github.com/${repo_owner}/${repo_name}/branches\n";
 	foreach ($br_arr as $br) {
 		$mail_body .= "* {$br}\n";

@@ -67,6 +67,19 @@ class PRWatcher
 	/**
 	 * PRを取得する
 	 *
+	 * @param  int   $pr_number PR番号
+	 * @return array            GithubAPI-PRのレスポンス
+	 */
+	public function getOnePullRequest($pr_number)
+	{
+		return $this->client
+			->api('pull_request')
+			->show($this->repo_owner, $this->repo_name, $pr_number);
+	}
+
+	/**
+	 * PRを全て取得する
+	 *
 	 * @return array $return_arr GithubAPI-PRのレスポンスから、不要なPRを除去したもの
 	 */
 	public function getPullRequests()
@@ -155,11 +168,11 @@ class PRWatcher
 	}
 
 	/**
-	 * 保存済みPRを取得する
+	 * 保存済みPR番号を取得する
 	 *
 	 * @return array PR情報
 	 */
-	public function getSavedPR()
+	public function getSavedPRNumber()
 	{
 		if ($this->fh_pr->isExist()) {
 			return $this->fh_pr->read();
@@ -181,26 +194,19 @@ class PRWatcher
 	}
 
 	/**
-	 * PRを保存する
+	 * PR番号を保存する
 	 *
-	 * @param array $this->getPullRequestsの返り値
+	 * @param array $pr_arr $this->getPullRequestsの返り値
 	 */
-	public function savePR(array $pr_arr)
+	public function savePRNumber(array $pr_arr)
 	{
-		$data = [];
-		foreach ($pr_arr as $pr_number => $pr) {
-			$data[$pr_number] = [
-				'title' => $pr['title'],
-				'user'  => $pr['user']['login'],
-			];
-		}
-		$this->fh_pr->overwrite($data);
+		$this->fh_pr->overwrite(array_keys($pr_arr));
 	}
 
 	/**
 	 * コメントidを保存する
 	 *
-	 * @param array $this->getCommentsの返り値
+	 * @param array $comment_arr $this->getCommentsの返り値
 	 */
 	public function saveCommentId(array $comment_arr)
 	{

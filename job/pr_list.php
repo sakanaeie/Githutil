@@ -30,7 +30,7 @@ foreach ($pr_arr as $pr) {
 
 // メールを送信する
 if ('' !== $mail_body) {
-	$mail_body = "(clock) github pull requrest list (clock)\n\n" . $mail_body;
+	$mail_body = "(waiting) github pull requrest list (waiting)\n\n" . $mail_body;
 	try {
 		$send_status = \Githutil\Infrastructure\Gmail::send(
 			GMAIL_ACCOUNT_NAME,
