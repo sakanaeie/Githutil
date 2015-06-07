@@ -1,4 +1,4 @@
-# githutil
+# Githutil
 
 ## 概要
 
@@ -17,7 +17,7 @@
 * 下記crontabを適宜編集し設定する
 
 ```crontab
-*	*	*	*	*	php <PATH>/Githutil/job/pr_watcher.php <OWNER> <REPO>
+*	0-2,10-23	*	*	*	php <PATH>/Githutil/job/pr_watcher.php <OWNER> <REPO>
 0	10	*	*	1-5	php <PATH>/Githutil/job/pr_list.php <OWNER> <REPO>
 0	18	*	*	1-5	php <PATH>/Githutil/job/not_pr_list.php <OWNER> <REPO>
 ```
