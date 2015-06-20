@@ -1,13 +1,10 @@
 <?php
 
 /**
- * Monologのラッパ
+ * Monologのラッパー
  */
 
 namespace Githutil\Infrastructure;
-
-use \Monolog\Logger as MonoLogger;
-use \Monolog\Handler\RotatingFileHandler;
 
 class Logger
 {
@@ -20,8 +17,8 @@ class Logger
 	public static function singleton()
 	{
 		if (is_null(self::$log)) {
-			self::$log = new MonoLogger(LOG_CHANNEL);
-			self::$log->pushHandler(new RotatingFileHandler(
+			self::$log = new \Monolog\Logger(LOG_CHANNEL);
+			self::$log->pushHandler(new \Monolog\Handler\RotatingFileHandler(
 				LOG_FILE_NAME,
 				LOG_FILE_NUMBER,
 				constant('\Monolog\Logger::' . LOG_LEVEL),

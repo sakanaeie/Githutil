@@ -3,17 +3,34 @@
 namespace Githutil\Model\Github;
 
 use \Githutil\Infrastructure\JsonFile;
+use \Githutil\Infrastructure\Logger;
 
 class PRWatcher
 {
+	/**
+	 * jsonファイルの格納場所
+	 */
 	const PR_SAVE_FILE_PATH_TPL      = ROOT_PATH . '/storage/json/%s_%s_PRWatcher_pr_number.json';
 	const COMMENT_SAVE_FILE_PATH_TPL = ROOT_PATH . '/storage/json/%s_%s_PRWatcher_comment_id.json';
 
+	/**
+	 * @var \Github\Client
+	 */
 	private $client;
 
+	/**
+	 * @var string レポジトリのオーナー名
+	 */
 	private $repo_owner;
+
+	/**
+	 * @var string レポジトリ名
+	 */
 	private $repo_name;
 
+	/**
+	 * @var JsonFile jsonファイル操作インスタンス
+	 */
 	private $fh_pr;
 	private $fh_comment;
 
@@ -56,7 +73,7 @@ class PRWatcher
 		$pr_branch_name_arr = array_column(array_column($pr_arr, 'head'), 'ref');
 		$return_arr = [];
 		foreach ($br_arr as $br) {
-			if ('master' !== $br['name'] and !in_array($br['name'], $pr_branch_name_arr)) {
+			if (!in_array($br['name'], $pr_branch_name_arr)) {
 				$return_arr[] = $br['name'];
 			}
 		}
@@ -90,7 +107,7 @@ class PRWatcher
 
 		$return_arr = [];
 		foreach ($pr_arr as $pr) {
-			if (1 === preg_match(GITHUB_TARGET_PR_PATTERN_IN_TITLE, $pr['title'])) {
+			if (1 === preg_match(GITHUB_PATTERN_TARGET_PR, $pr['title'])) {
 				// レビュー対象であるとき
 				$return_arr[$pr['number']] = $pr;
 			}
@@ -130,8 +147,8 @@ class PRWatcher
 		$review_status = 0;
 		$return_arr    = [];
 		foreach ($comment_arr as $comment) {
-			if (false !== strpos($comment['user']['login'], 'jenkinsbot')) {
-				// ジェンキンスポットのときは飛ばす
+			if (1 === preg_match(GITHUB_PATTERN_IGNORE_USER, $comment['user']['login'])) {
+				// このユーザのコメントは無視する
 				continue;
 			}
 
@@ -141,24 +158,20 @@ class PRWatcher
 			} else {
 				// PR自体に対するものであるとき
 				$type = 'pr';
-				if (1 === preg_match(GITHUB_PERMIT_PR_PATTERN_IN_COMMENT, $comment['body'])) {
+				if (1 === preg_match(GITHUB_PATTERN_AGREE, $comment['body'])) {
 					$review_status += 1;
 				}
-				if (1 === preg_match(GITHUB_RESET_PR_PATTERN_IN_COMMENT, $comment['body'])) {
+				if (1 === preg_match(GITHUB_PATTERN_RESET_AGREE,  $comment['body'])) {
 					$review_status = 0;
 				}
 			}
 
-			// emoticonをすべて取得する
-			$emo = [];
-			preg_match_all('/:[^\s]+:/', $comment['body'], $emo);
-
 			$return_arr[] = [
 				'is_new'        => $is_new,
+				'is_decorate'   => (1 === preg_match(GITHUB_PATTERN_SHOW_URL, $comment['body'])),
 				'review_status' => $review_status,
 				'type'          => $type,
 				'content'       => $comment,
-				'emo'           => $emo[0],
 			];
 
 			$is_new = false;
@@ -218,6 +231,30 @@ class PRWatcher
 			$data[$comment['type']][] = $comment['content']['id'];
 		}
 		$this->fh_comment->overwrite($data);
+	}
+
+	/**
+	 * メールを送信する
+	 *
+	 * @param string $mail_body メール本文
+	 */
+	public function sendMail($mail_body)
+	{
+		try {
+			$send_status = \Githutil\Infrastructure\Gmail::send(
+				GMAIL_ACCOUNT_NAME,
+				GMAIL_PASSWORD,
+				GMAIL_SUBJECT,
+				\Githutil\Model\Github\EmoConv::toSkype($mail_body),
+				GMAIL_TO,
+				GMAIL_FROM
+			);
+			if (true !== $send_status) {
+				Logger::info($send_status->toString());
+			}
+		} catch (\Exception $e) {
+			Logger::error($e->getMessage());
+		}
 	}
 
 	/**
