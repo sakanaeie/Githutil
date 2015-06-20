@@ -126,17 +126,22 @@ class PRWatcher
 	 */
 	public function getComments($pr_number)
 	{
+		// コメントは30個でページングされるため、それらを一気に取得するためのインスタンスを生成する
+		$pager = new \Github\ResultPager($this->client);
+
 		// コメントを取得する (PR内のファイルに対するもの)
-		$pr_comments = $this->client
-			->api('pull_request')
-			->comments()
-			->all($this->repo_owner, $this->repo_name, $pr_number);
+		$pr_comments = $pager->fetchAll(
+			$this->client->api('pull_request')->comments(),
+			'all',
+			array($this->repo_owner, $this->repo_name, $pr_number)
+		);
 
 		// コメントを取得する (PR自体に対するもの)
-		$issue_comments = $this->client
-			->api('issue')
-			->comments()
-			->all($this->repo_owner, $this->repo_name, $pr_number);
+		$issue_comments = $pager->fetchAll(
+			$this->client->api('issue')->comments(),
+			'all',
+			array($this->repo_owner, $this->repo_name, $pr_number)
+		);
 
 		// コメントをマージして、日付昇順にする
 		$comment_arr = array_merge($pr_comments, $issue_comments);
