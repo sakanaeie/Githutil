@@ -2,6 +2,8 @@
 
 namespace Githutil\Command\Controller;
 
+use Githutil\Model\Github\PRWatcher;
+
 class GithubController
 {
 	/**
@@ -36,7 +38,7 @@ class GithubController
 		$this->repo_owner = $argv[1];
 		$this->repo_name  = $argv[2];
 
-		$this->client = new \Githutil\Model\Github\PRWatcher(GITHUB_ACCESS_TOKEN, $this->repo_owner, $this->repo_name);
+		$this->client = new PRWatcher(GITHUB_ACCESS_TOKEN, $this->repo_owner, $this->repo_name);
 	}
 
 	/**
@@ -77,7 +79,7 @@ class GithubController
 
 		$mail_body = '';
 		foreach ($pr_arr as $pr) {
-			$mail_body .= sprintf("%s (%s)\n", $pr['title'], $pr['user']['login']);
+			$mail_body .= sprintf("%s (%s)\n", $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
 			$mail_body .= sprintf("%s\n\n", $pr['html_url']);
 		}
 
@@ -115,7 +117,7 @@ class GithubController
 				} else {
 					$state = '(ninja) ' . $pr['state'] . ' (not merge)';
 				}
-				$mail_body .= sprintf("%s %s (%s)\n", $state, $pr['title'], $pr['user']['login']);
+				$mail_body .= sprintf("%s %s (%s)\n", $state, $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
 				$mail_body .= "--------------------------------------------------------------------------------\n";
 			}
 		}
@@ -136,9 +138,9 @@ class GithubController
 					// 保存済みでないとき
 					$is_deco    = ($comment['is_new'] or $comment['is_decorate']);
 					$mail_body .= $is_deco ? '(*) ' : '(mail) ';
-					$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], $pr['title'], $pr['user']['login']);
+					$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
 					$mail_body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
-					$mail_body .= sprintf("%s (%s)\n", trim($content['body']), $content['user']['login']);
+					$mail_body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));
 					$mail_body .= "--------------------------------------------------------------------------------\n";
 				}
 			}

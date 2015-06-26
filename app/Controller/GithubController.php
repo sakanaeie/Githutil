@@ -42,8 +42,7 @@ class GithubController
 					$reviewer_arr = [];
 				} elseif ($review_status !== $comment['review_status']) {
 					$review_status  = $comment['review_status'];
-					$user_name      = $comment['content']['user']['login'];
-					$reviewer_arr[] = isset($name_list[$user_name]) ? $name_list[$user_name] : $user_name;
+					$reviewer_arr[] = PRWatcher::convertUserName($comment['content']['user']['login']);
 				}
 			}
 			$reviewer_str = implode(', ', $reviewer_arr);
@@ -53,7 +52,7 @@ class GithubController
 				isset($last_comment['review_status']) ? $last_comment['review_status'] : 0,
 				$pr['html_url'],
 				$pr['title'],
-				isset($name_list[$pr['user']['login']]) ? $name_list[$pr['user']['login']] : $pr['user']['login'],
+				PRWatcher::convertUserName($pr['user']['login']),
 				$reviewer_str
 			);
 		}

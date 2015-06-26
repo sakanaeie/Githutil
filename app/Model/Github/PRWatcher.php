@@ -276,6 +276,17 @@ class PRWatcher
 	}
 
 	/**
+	 * ユーザ名を変換する
+	 *
+	 * @param  string $name ユーザ名
+	 * @return string       返還後ユーザ名
+	 */
+	public static function convertUserName($name)
+	{
+		return isset($GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'][$name]) ? $GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'][$name] : $name;
+	}
+
+	/**
 	 * usort用関数, 日付昇順にする
 	 */
 	private static function dateAscSort($a, $b)
