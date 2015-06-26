@@ -14,6 +14,13 @@ class PRWatcher
 	const COMMENT_SAVE_FILE_PATH_TPL = ROOT_PATH . '/storage/json/%s_%s_PRWatcher_comment_id.json';
 
 	/**
+	 * コメント取得モード
+	 */
+	const COMMENT_GET_ALL  = 1;
+	const COMMENT_GET_PR   = 2;	// PRページのみ
+	const COMMENT_GET_FILE = 3;	// ファイルページのみ
+
+	/**
 	 * @var \Github\Client
 	 */
 	private $client;
@@ -124,24 +131,30 @@ class PRWatcher
 	 * @param  int   $pr_number  PR番号
 	 * @return array $return_arr GithubAPI-Commentのレスポンスと、追加情報を含む配列
 	 */
-	public function getComments($pr_number)
+	public function getComments($pr_number, $mode = self::COMMENT_GET_ALL)
 	{
 		// コメントは30個でページングされるため、それらを一気に取得するためのインスタンスを生成する
 		$pager = new \Github\ResultPager($this->client);
 
 		// コメントを取得する (PR内のファイルに対するもの)
-		$pr_comments = $pager->fetchAll(
-			$this->client->api('pull_request')->comments(),
-			'all',
-			array($this->repo_owner, $this->repo_name, $pr_number)
-		);
+		$pr_comments = [];
+		if (self::COMMENT_GET_ALL === $mode or self::COMMENT_GET_FILE === $mode) {
+			$pr_comments = $pager->fetchAll(
+				$this->client->api('pull_request')->comments(),
+				'all',
+				array($this->repo_owner, $this->repo_name, $pr_number)
+			);
+		}
 
 		// コメントを取得する (PR自体に対するもの)
-		$issue_comments = $pager->fetchAll(
-			$this->client->api('issue')->comments(),
-			'all',
-			array($this->repo_owner, $this->repo_name, $pr_number)
-		);
+		$issue_comments = [];
+		if (self::COMMENT_GET_ALL === $mode or self::COMMENT_GET_PR === $mode) {
+			$issue_comments = $pager->fetchAll(
+				$this->client->api('issue')->comments(),
+				'all',
+				array($this->repo_owner, $this->repo_name, $pr_number)
+			);
+		}
 
 		// コメントをマージして、日付昇順にする
 		$comment_arr = array_merge($pr_comments, $issue_comments);
