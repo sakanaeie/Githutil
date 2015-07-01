@@ -77,7 +77,8 @@ class PRWatcher
 			->api('pull_request')
 			->all($this->repo_owner, $this->repo_name);
 
-		$pr_branch_name_arr = array_column(array_column($pr_arr, 'head'), 'ref');
+		$pr_branch_name_arr   = array_column(array_column($pr_arr, 'head'), 'ref');
+		$pr_branch_name_arr[] = 'master';
 		$return_arr = [];
 		foreach ($br_arr as $br) {
 			if (!in_array($br['name'], $pr_branch_name_arr)) {
@@ -279,7 +280,7 @@ class PRWatcher
 	 * ユーザ名を変換する
 	 *
 	 * @param  string $name ユーザ名
-	 * @return string       返還後ユーザ名
+	 * @return string       変換後ユーザ名
 	 */
 	public static function convertUserName($name)
 	{

@@ -138,7 +138,7 @@ class GithubController
 					// 保存済みでないとき
 					$is_deco    = ($comment['is_new'] or $comment['is_decorate']);
 					$mail_body .= $is_deco ? '(*) ' : '(mail) ';
-					$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
+					$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], mb_strimwidth($pr['title'], 0, 80, '...'), PRWatcher::convertUserName($pr['user']['login']));
 					$mail_body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
 					$mail_body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));
 					$mail_body .= "--------------------------------------------------------------------------------\n";

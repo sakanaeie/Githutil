@@ -11,7 +11,6 @@ class EmoConv
 	const SKYPE = [
 		':+1:'    => '(y) ',
 		'![LGTM]' => '(y) ',
-		':0:'     => '(*) ',
 		':bow:'   => '(bow) ',
 	];
 
