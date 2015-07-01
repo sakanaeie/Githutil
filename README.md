@@ -3,6 +3,7 @@
 ## 概要
 
 * 特定リポジトリのPRを取得し、その内容をメールで転送します
+* 外製チャットボットにメール送信し、チャットに転写させることを目的として設計されています
 
 ## 環境
 
@@ -18,6 +19,23 @@
 
 ```crontab
 *	0-2,10-23	*	*	*	php <PATH>/Githutil/job/pr_watcher.php <OWNER> <REPO>
-0	10	*	*	1-5	php <PATH>/Githutil/job/pr_list.php <OWNER> <REPO>
+0	10,14,18	*	*	1-5	php <PATH>/Githutil/job/pr_list.php <OWNER> <REPO>
 0	18	*	*	1-5	php <PATH>/Githutil/job/not_pr_list.php <OWNER> <REPO>
 ```
+
+## 各ジョブについて
+
+* not_pr_list.php
+  * PRしてないブランチ一覧を取得し、メール送信します
+  * ブランチ消し忘れ検知を目的とします
+* pr_list.php
+  * PR一覧を取得し、メール送信します
+  * 各PRに、メンバーのレビュー状況も合わせて記載します
+  * 各PRが、誰のレビュー待ちないのか把握することを目的とします
+* pr_watcher.php
+  * merge/closeを検知し、メール送信します
+  * PRコメントを取得し、メール送信します
+  * PRコメント内の特殊な記法を解釈し、記載内容を変化させます
+    * :+1: を付けると、先頭の数字がインクリメントされます
+    * :0: を付けると、先頭の数字が0になります
+    * :bow: を付けると、PRページのURLが記載されます
