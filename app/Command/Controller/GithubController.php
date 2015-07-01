@@ -78,9 +78,53 @@ class GithubController
 		}
 
 		$mail_body = '';
-		foreach ($pr_arr as $pr) {
-			$mail_body .= sprintf("%s (%s)\n", $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
-			$mail_body .= sprintf("%s\n\n", $pr['html_url']);
+		foreach ($pr_arr as $pr_number => $pr) {
+			// コメントを取得する
+			$comment_arr = $this->client->getComments($pr_number);
+
+			// コメントを逆順に処理し、レビューリセット後のコメントのみ取得する
+			$commented_user_arr = $agreed_user_arr  = [];
+			foreach (array_reverse($comment_arr) as $comment) {
+				if ($comment['is_reset']) {
+					break;
+				}
+				$name = $comment['content']['user']['login'];
+
+				// コメントしたユーザを取得する
+				$commented_user_arr[] = $name;
+
+				// レビューokを出したユーザを取得する
+				if ($comment['is_agree']) {
+					$agreed_user_arr[] = $name;
+				}
+			}
+
+			// 最後のコメントを取得する
+			$last_comment  = end($comment_arr);
+			$review_status = isset($last_comment['review_status']) ? $last_comment['review_status'] : 0;
+
+			// メール本文を作成する
+			$pr_user_name = $pr['user']['login'];
+			$mail_body .= sprintf("(%s) %s (%s)\n", $review_status, $pr['title'], PRWatcher::convertUserName($pr_user_name));
+			$mail_body .= sprintf("%s\n", $pr['html_url']);
+
+			foreach ($GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'] as $name => $disp_name) {
+				if ($pr_user_name === $name) {
+					continue;
+				}
+
+				if (false !== array_search($name, $agreed_user_arr)) {
+					$user_status =  'Agreed';
+				} elseif (false !== array_search($name, $commented_user_arr)) {
+					$user_status =  'Commented';
+				} else {
+					$user_status =  '';
+				}
+
+				$mail_body .= sprintf("%s : %s\n", $disp_name, $user_status);
+			}
+
+			$mail_body .= "--------------------------------------------------------------------------------\n";
 		}
 
 		// メールを送信する

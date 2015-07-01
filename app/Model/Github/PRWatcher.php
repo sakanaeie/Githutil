@@ -171,6 +171,7 @@ class PRWatcher
 				continue;
 			}
 
+			$is_agree = $is_reset = $is_deco = false;
 			if (isset($comment['diff_hunk'])) {
 				// PR内のファイルに対するものであるとき
 				$type = 'file';
@@ -178,16 +179,23 @@ class PRWatcher
 				// PR自体に対するものであるとき
 				$type = 'pr';
 				if (1 === preg_match(GITHUB_PATTERN_AGREE, $comment['body'])) {
+					$is_agree = true;
 					$review_status += 1;
 				}
 				if (1 === preg_match(GITHUB_PATTERN_RESET_AGREE,  $comment['body'])) {
+					$is_reset = true;
 					$review_status = 0;
+				}
+				if (1 === preg_match(GITHUB_PATTERN_SHOW_URL, $comment['body'])) {
+					$is_deco  = true;
 				}
 			}
 
 			$return_arr[] = [
 				'is_new'        => $is_new,
-				'is_decorate'   => (1 === preg_match(GITHUB_PATTERN_SHOW_URL, $comment['body'])),
+				'is_decorate'   => $is_deco,
+				'is_agree'      => $is_agree,
+				'is_reset'      => $is_reset,
 				'review_status' => $review_status,
 				'type'          => $type,
 				'content'       => $comment,
