@@ -72,7 +72,7 @@ class GithubController
 	{
 		try {
 			// PRを取得する
-			$pr_arr = $this->client->getPullRequests();
+			$pr_arr = $this->client->getPullRequestsWithBlackListFilter();
 		} catch (\Exception $e) {
 			exit("github接続に失敗しました、引数を確認してください\n");
 		}
@@ -105,7 +105,7 @@ class GithubController
 
 			// メール本文を作成する
 			$pr_user_name = $pr['user']['login'];
-			$mail_body .= sprintf("(%s) %s (%s)\n", $review_status, $pr['title'], PRWatcher::convertUserName($pr_user_name));
+			$mail_body .= sprintf("(+%s) %s (%s)\n", $review_status, $pr['title'], PRWatcher::convertUserName($pr_user_name));
 			$mail_body .= sprintf("%s\n", $pr['html_url']);
 
 			foreach ($GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'] as $name => $disp_name) {
@@ -114,9 +114,9 @@ class GithubController
 				}
 
 				if (false !== array_search($name, $agreed_user_arr)) {
-					$user_status =  'Agreed';
+					$user_status =  'agreed';
 				} elseif (false !== array_search($name, $commented_user_arr)) {
-					$user_status =  'Commented';
+					$user_status =  'commented';
 				} else {
 					$user_status =  '';
 				}

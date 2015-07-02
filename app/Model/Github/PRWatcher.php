@@ -125,6 +125,24 @@ class PRWatcher
 	}
 
 	/**
+	 * PRを全て取得する (ブラックリスト利用)
+	 *
+	 * @return array $return_arr GithubAPI-PRのレスポンスから、不要なPRを除去したもの
+	 */
+	public function getPullRequestsWithBlackListFilter()
+	{
+		$pr_arr = $this->getPullRequests();
+
+		foreach ($pr_arr as $pr_number => $pr) {
+			if (1 === preg_match(GITHUB_PATTERN_IGNORE_PR_IN_LIST, $pr['title'])) {
+				unset($pr_arr[$pr_number]);;
+			}
+		}
+
+		return $pr_arr;
+	}
+
+	/**
 	 * コメントを取得する
 	 *
 	 * PR内のファイルに対するもの、PR自体に対するもの、両方を取得しマージする
