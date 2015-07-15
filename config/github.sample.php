@@ -15,12 +15,12 @@ define('GITHUB_PATTERN_AGREE', '/^:\+1:|\[LGTM\]/');
 define('GITHUB_PATTERN_RESET_AGREE', '/:0:/');
 
 // このパターンがコメントにあるとき、URLを表示させる
-define('GITHUB_PATTERN_SHOW_URL', '/:bow:/');
+define('GITHUB_PATTERN_SHOW_URL', '/:bow:|:\+1:/');
 
 // このパターンがアカウント名にあるとき、このユーザのコメントは無視する
 define('GITHUB_PATTERN_IGNORE_USER', '/jenkinsbot|-bot$/');
 
-// アカウント名対実名 TODO 気持ち悪いので、define/GLOBALS制はやめる
+// アカウント名対実名
 $GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'] = [
 	'sakanaeie' => 'さかな えいえ'
 ];
