@@ -79,10 +79,6 @@ class GithubController
 
 		$mail_body = '';
 		foreach ($pr_arr as $pr_number => $pr) {
-			// 同チームの人間であるかどうか確認する
-			$pr_user_name = $pr['user']['login'];
-			$is_teammate  = isset($GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'][$pr_user_name]);
-
 			// コメントを取得する
 			$comment_arr = $this->client->getComments($pr_number);
 
@@ -108,6 +104,7 @@ class GithubController
 			$review_status = isset($last_comment['review_status']) ? $last_comment['review_status'] : 0;
 
 			// メール本文を作成する
+			$pr_user_name = $pr['user']['login'];
 			$mail_body .= sprintf("(+%s) %s (%s)\n", $review_status, $pr['title'], PRWatcher::convertUserName($pr_user_name));
 			$mail_body .= sprintf("%s\n", $pr['html_url']);
 
@@ -116,19 +113,16 @@ class GithubController
 					continue;
 				}
 
+				$user_status =  '';
 				if (false !== array_search($name, $agreed_user_arr)) {
 					$user_status =  'agreed';
 				} elseif (false !== array_search($name, $commented_user_arr)) {
 					$user_status =  'commented';
-				} else {
-					$user_status =  '';
 				}
 
-				if (!$is_teammate and '' === $user_status) {
-					// 同チームのPRでなく、これをレビューしてない人は表示しない
-					continue;
+				if ('' !== $user_status) {
+					$mail_body .= sprintf("%s : %s\n", $disp_name, $user_status);
 				}
-				$mail_body .= sprintf("%s : %s\n", $disp_name, $user_status);
 			}
 
 			$mail_body .= "--------------------------------------------------------------------------------\n";
