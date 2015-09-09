@@ -17,6 +17,9 @@ define('GITHUB_PATTERN_RESET_AGREE', '/:0:/');
 // このパターンがコメントにあるとき、URLを表示させる
 define('GITHUB_PATTERN_SHOW_URL', '/:bow:|:\+1:/');
 
+// このパターンがコメントにあるとき、表示させない
+define('GITHUB_PATTERN_MEMO', '/:memo:/');
+
 // このパターンがアカウント名にあるとき、このユーザのコメントは無視する
 define('GITHUB_PATTERN_IGNORE_USER', '/jenkinsbot|-bot$/');
 

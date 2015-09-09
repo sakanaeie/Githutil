@@ -6,6 +6,9 @@ use Githutil\Model\Github\PRWatcher;
 
 class GithubController
 {
+
+	const BAR_AND_EOL = "------------------------------------------------------------\n";
+
 	/**
 	 * @var string レポジトリのオーナー名
 	 */
@@ -125,7 +128,7 @@ class GithubController
 				}
 			}
 
-			$mail_body .= "--------------------------------------------------------------------------------\n";
+			$mail_body .= self::BAR_AND_EOL;
 		}
 
 		// メールを送信する
@@ -163,7 +166,7 @@ class GithubController
 					$state = '(ninja) ' . $pr['state'] . ' (not merge)';
 				}
 				$mail_body .= sprintf("%s %s (%s)\n", $state, $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
-				$mail_body .= "--------------------------------------------------------------------------------\n";
+				$mail_body .= self::BAR_AND_EOL;
 			}
 		}
 
@@ -176,6 +179,11 @@ class GithubController
 
 			// メール本文を作成する
 			foreach ($comment_arr as $comment) {
+				if ($comment['is_memo']) {
+					// メモであるとき
+					continue;	// 飛ばす
+				}
+
 				$type    = $comment['type'];
 				$content = $comment['content'];
 
@@ -186,7 +194,7 @@ class GithubController
 					$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], mb_strimwidth($pr['title'], 0, 80, '...'), PRWatcher::convertUserName($pr['user']['login']));
 					$mail_body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
 					$mail_body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));
-					$mail_body .= "--------------------------------------------------------------------------------\n";
+					$mail_body .= self::BAR_AND_EOL;
 				}
 			}
 		}

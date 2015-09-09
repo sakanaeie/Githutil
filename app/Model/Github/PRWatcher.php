@@ -189,7 +189,7 @@ class PRWatcher
 				continue;
 			}
 
-			$is_agree = $is_reset = $is_deco = false;
+			$is_agree = $is_reset = $is_deco = $is_memo = false;
 			if (isset($comment['diff_hunk'])) {
 				// PR内のファイルに対するものであるとき
 				$type = 'file';
@@ -208,12 +208,16 @@ class PRWatcher
 					$is_deco  = true;
 				}
 			}
+			if (1 === preg_match(GITHUB_PATTERN_MEMO, $comment['body'])) {
+				$is_memo = true;
+			}
 
 			$return_arr[] = [
 				'is_new'        => $is_new,
 				'is_decorate'   => $is_deco,
 				'is_agree'      => $is_agree,
 				'is_reset'      => $is_reset,
+				'is_memo'       => $is_memo,
 				'review_status' => $review_status,
 				'type'          => $type,
 				'content'       => $comment,
