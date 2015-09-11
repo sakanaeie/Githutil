@@ -45,7 +45,7 @@ class GithubController
 	}
 
 	/**
-	 * PRしてないブランチ一覧をメール送信する
+	 * PRしてないブランチ一覧をメッセージ送信する
 	 */
 	public function notPRList()
 	{
@@ -56,20 +56,20 @@ class GithubController
 		}
 
 		if (0 < count($br_arr)) {
-			// メール本文を作成する
-			$mail_body  = "(tumbleweed) github branch list (not in PR) (tumbleweed)\n";
-			$mail_body .= "https://github.com/{$this->repo_owner}/{$this->repo_name}/branches\n";
+			// メッセージ本文を作成する
+			$body  = "(tumbleweed) github branch list (not in PR) (tumbleweed)\n";
+			$body .= "https://github.com/{$this->repo_owner}/{$this->repo_name}/branches\n";
 			foreach ($br_arr as $br) {
-				$mail_body .= "* {$br}\n";
+				$body .= "* {$br}\n";
 			}
 
-			// メールを送信する
-			$this->client->sendMail($mail_body);
+			// メッセージを送信する
+			$this->client->sendMessage($body);
 		}
 	}
 
 	/**
-	 * PR一覧をメール送信する
+	 * PR一覧をメッセージ送信する
 	 */
 	public function prList()
 	{
@@ -80,7 +80,7 @@ class GithubController
 			exit("github接続に失敗しました、引数を確認してください\n");
 		}
 
-		$mail_body = '';
+		$body = '';
 		foreach ($pr_arr as $pr_number => $pr) {
 			// コメントを取得する
 			$comment_arr = $this->client->getComments($pr_number);
@@ -106,10 +106,10 @@ class GithubController
 			$last_comment  = end($comment_arr);
 			$review_status = isset($last_comment['review_status']) ? $last_comment['review_status'] : 0;
 
-			// メール本文を作成する
+			// メッセージ本文を作成する
 			$pr_user_name = $pr['user']['login'];
-			$mail_body .= sprintf("(+%s) %s (%s)\n", $review_status, $pr['title'], PRWatcher::convertUserName($pr_user_name));
-			$mail_body .= sprintf("%s\n", $pr['html_url']);
+			$body .= sprintf("(+%s) %s (%s)\n", $review_status, $pr['title'], PRWatcher::convertUserName($pr_user_name));
+			$body .= sprintf("%s\n", $pr['html_url']);
 
 			foreach ($GLOBALS['APP_DEFINE']['GITHUB_USER_NAME_LIST'] as $name => $disp_name) {
 				if ($pr_user_name === $name) {
@@ -124,22 +124,22 @@ class GithubController
 				}
 
 				if ('' !== $user_status) {
-					$mail_body .= sprintf("%s : %s\n", $disp_name, $user_status);
+					$body .= sprintf("%s : %s\n", $disp_name, $user_status);
 				}
 			}
 
-			$mail_body .= self::BAR_AND_EOL;
+			$body .= self::BAR_AND_EOL;
 		}
 
-		// メールを送信する
-		if ('' !== $mail_body) {
-			$mail_body = "(waiting) github pull requrest list (waiting)\n\n" . $mail_body;
-			$this->client->sendMail($mail_body);
+		// メッセージを送信する
+		if ('' !== $body) {
+			$body = "(waiting) github pull requrest list (waiting)\n\n" . $body;
+			$this->client->sendMessage($body);
 		}
 	}
 
 	/**
-	 * PRのコメントをメール送信する
+	 * PRのコメントをメッセージ送信する
 	 */
 	public function prWatcher()
 	{
@@ -154,8 +154,8 @@ class GithubController
 		$saved_pr_number_arr   = $this->client->getSavedPRNumber();
 		$saved_comment_id_info = $this->client->getSavedCommentId();
 
-		// マージ済みPRを検知し、メール本文を作成する
-		$mail_body = '';
+		// マージ済みPRを検知し、メッセージ本文を作成する
+		$body = '';
 		$merged_pr_number_arr = array_diff($saved_pr_number_arr, array_keys($pr_arr));
 		foreach ($saved_pr_number_arr as $pr_number) {
 			if (false !== array_search($pr_number, $merged_pr_number_arr)) {
@@ -165,19 +165,19 @@ class GithubController
 				} else {
 					$state = '(ninja) ' . $pr['state'] . ' (not merge)';
 				}
-				$mail_body .= sprintf("%s %s (%s)\n", $state, $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
-				$mail_body .= self::BAR_AND_EOL;
+				$body .= sprintf("%s %s (%s)\n", $state, $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
+				$body .= self::BAR_AND_EOL;
 			}
 		}
 
-		// コメントを取得し、メール本文を作成する
+		// コメントを取得し、メッセージ本文を作成する
 		$all_comment_arr = [];
 		foreach ($pr_arr as $pr_number => $pr) {
 			// コメントを取得する
 			$comment_arr     = $this->client->getComments($pr_number);
 			$all_comment_arr = array_merge($all_comment_arr, $comment_arr);
 
-			// メール本文を作成する
+			// メッセージ本文を作成する
 			foreach ($comment_arr as $comment) {
 				if ($comment['is_memo']) {
 					// メモであるとき
@@ -189,12 +189,12 @@ class GithubController
 
 				if (!isset($saved_comment_id_info[$type]) or false === array_search($content['id'], $saved_comment_id_info[$type])) {
 					// 保存済みでないとき
-					$is_deco    = ($comment['is_new'] or $comment['is_decorate']);
-					$mail_body .= $is_deco ? '(*) ' : '(mail) ';
-					$mail_body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], mb_strimwidth($pr['title'], 0, 80, '...'), PRWatcher::convertUserName($pr['user']['login']));
-					$mail_body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
-					$mail_body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));
-					$mail_body .= self::BAR_AND_EOL;
+					$is_deco = ($comment['is_new'] or $comment['is_decorate']);
+					$body .= $is_deco ? '(*) ' : '(mail) ';
+					$body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], mb_strimwidth($pr['title'], 0, 80, '...'), PRWatcher::convertUserName($pr['user']['login']));
+					$body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
+					$body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));
+					$body .= self::BAR_AND_EOL;
 				}
 			}
 		}
@@ -204,9 +204,9 @@ class GithubController
 		$this->client->savePRNumber($pr_arr);
 		$this->client->saveCommentId($all_comment_arr);
 
-		// メールを送信する
-		if ('' !== $mail_body) {
-			$this->client->sendMail($mail_body);
+		// メッセージを送信する
+		if ('' !== $body) {
+			$this->client->sendMessage($body);
 		}
 	}
 }

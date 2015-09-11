@@ -1,4 +1,6 @@
 # 設定
+config/chatbot.php
+config/common.php
 config/github.php
 config/gmail.php
 

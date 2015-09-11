@@ -283,18 +283,35 @@ class PRWatcher
 	}
 
 	/**
+	 * メール送信やAPIアクセスにより、メッセージ送信する
+	 *
+	 * @param string $message_body 本文
+	 */
+	public function sendMessage($message_body)
+	{
+		switch (SEND_MODE) {
+		case SEND_MODE_MAIL:
+			$this->sendMail($message_body);
+			break;
+		case SEND_MODE_API:
+			$this->callApi($message_body);
+			break;
+		}
+	}
+
+	/**
 	 * メールを送信する
 	 *
-	 * @param string $mail_body メール本文
+	 * @param string $message_body 本文
 	 */
-	public function sendMail($mail_body)
+	private function sendMail($message_body)
 	{
 		try {
 			$send_status = \Githutil\Infrastructure\Gmail::send(
 				GMAIL_ACCOUNT_NAME,
 				GMAIL_PASSWORD,
 				GMAIL_SUBJECT,
-				\Githutil\Model\Github\EmoConv::toSkype($mail_body),
+				\Githutil\Model\Github\EmoConv::toSkype($message_body),
 				GMAIL_TO,
 				GMAIL_FROM
 			);
@@ -304,6 +321,21 @@ class PRWatcher
 		} catch (\Exception $e) {
 			Logger::error($e->getMessage());
 		}
+	}
+
+	/**
+	 * 外部アプリのAPIを叩く
+	 *
+	 * @param string $message_body 本文
+	 */
+	private function callApi($message_body)
+	{
+		$data = [
+			'room'    => CHAT_BOT_API_ROOM,
+			'message' => \Githutil\Model\Github\EmoConv::toSkype($message_body),
+		];
+
+		\Githutil\Infrastructure\Curl::execute(CHAT_BOT_API_URL, $data);
 	}
 
 	/**
