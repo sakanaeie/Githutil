@@ -133,7 +133,7 @@ class GithubController
 
 		// メッセージを送信する
 		if ('' !== $body) {
-			$body = "(waiting) github pull requrest list (waiting)\n\n" . $body;
+			$body = "(waiting) github pull request list (waiting)\n\n" . $body;
 			$this->client->sendMessage($body);
 		}
 	}
@@ -161,7 +161,7 @@ class GithubController
 			if (false !== array_search($pr_number, $merged_pr_number_arr)) {
 				$pr = $this->client->getOnePullRequest($pr_number);
 				if ($pr['merged']) {
-					$state = '(beer) merged';
+					$state = '(beer) merged (by ' . PRWatcher::convertUserName($pr['merged_by']['login']) . ')';
 				} else {
 					$state = '(ninja) ' . $pr['state'] . ' (not merge)';
 				}
