@@ -3,7 +3,7 @@
 ## 概要
 
 * 特定リポジトリのPRを取得し、その内容をメールで転送します
-* 外製チャットボットにメール送信し、チャットに転写させることを目的として設計されています
+* 外部チャットボットにメール送信 or APIを利用し、チャットに転写させることを目的として設計されています
 
 ## 環境
 
@@ -18,7 +18,7 @@
 * 下記crontabを適宜編集し設定する
 
 ```crontab
-*	0-2,10-23	*	*	*	php <PATH>/Githutil/job/pr_watcher.php <OWNER> <REPO>
+2	0-2,10-23	*	*	*	php <PATH>/Githutil/job/pr_watcher.php <OWNER> <REPO>
 0	10,14,18	*	*	1-5	php <PATH>/Githutil/job/pr_list.php <OWNER> <REPO>
 0	18	*	*	1-5	php <PATH>/Githutil/job/not_pr_list.php <OWNER> <REPO>
 ```
