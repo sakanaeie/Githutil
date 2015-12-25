@@ -3,6 +3,7 @@ config/chatbot.php
 config/common.php
 config/github.php
 config/gmail.php
+config/slack.php
 
 # composer
 vendor/

@@ -296,6 +296,9 @@ class PRWatcher
 		case SEND_MODE_API:
 			$this->callApi($message_body);
 			break;
+		case SEND_MODE_SLACK:
+			\Githutil\Model\Slack\WebHooks::callApi(SLACK_API_URL, $message_body);
+			break;
 		}
 	}
 
