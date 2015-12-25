@@ -57,7 +57,7 @@ class GithubController
 
 		if (0 < count($br_arr)) {
 			// メッセージ本文を作成する
-			$body  = "(tumbleweed) github branch list (not in PR) (tumbleweed)\n";
+			$body  = ":fire: github branch list (not in PR) :fire:\n";
 			$body .= "https://github.com/{$this->repo_owner}/{$this->repo_name}/branches\n";
 			foreach ($br_arr as $br) {
 				$body .= "* {$br}\n";
@@ -133,7 +133,7 @@ class GithubController
 
 		// メッセージを送信する
 		if ('' !== $body) {
-			$body = "(waiting) github pull request list (waiting)\n\n" . $body;
+			$body = ":hourglass: github pull request list :hourglass:\n\n" . $body;
 			$this->client->sendMessage($body);
 		}
 	}
@@ -161,9 +161,9 @@ class GithubController
 			if (false !== array_search($pr_number, $merged_pr_number_arr)) {
 				$pr = $this->client->getOnePullRequest($pr_number);
 				if ($pr['merged']) {
-					$state = '(beer) merged (by ' . PRWatcher::convertUserName($pr['merged_by']['login']) . ')';
+					$state = ':beer: merged (by ' . PRWatcher::convertUserName($pr['merged_by']['login']) . ')';
 				} else {
-					$state = '(ninja) ' . $pr['state'] . ' (not merge)';
+					$state = ':coffee: ' . $pr['state'] . ' (not merge)';
 				}
 				$body .= sprintf("%s %s (%s)\n", $state, $pr['title'], PRWatcher::convertUserName($pr['user']['login']));
 				$body .= self::BAR_AND_EOL;
@@ -190,7 +190,7 @@ class GithubController
 				if (!isset($saved_comment_id_info[$type]) or false === array_search($content['id'], $saved_comment_id_info[$type])) {
 					// 保存済みでないとき
 					$is_deco = ($comment['is_new'] or $comment['is_decorate']);
-					$body .= $is_deco ? '(*) ' : '(mail) ';
+					$body .= $is_deco ? ':star: ' : ':e-mail: ';
 					$body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], mb_strimwidth($pr['title'], 0, 80, '...'), PRWatcher::convertUserName($pr['user']['login']));
 					$body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
 					$body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));

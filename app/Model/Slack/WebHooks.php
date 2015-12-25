@@ -16,13 +16,11 @@ class WebHooks
 	 */
 	public static function callApi($url, $text)
 	{
-		// json形式のpayloadを構築する
-		$json = json_encode([
-			'text' => $text,
+		$payload = http_build_query([
+			'payload' => json_encode([
+				'text' => $text,
+			]),
 		]);
-
-		// postデータを構築する
-		$payload = "payload={$json}";
 
 		// APIを叩く
 		\Githutil\Infrastructure\Curl::execute($url, $payload, false);

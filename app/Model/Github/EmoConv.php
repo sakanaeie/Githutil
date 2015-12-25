@@ -9,9 +9,15 @@ namespace Githutil\Model\Github;
 class EmoConv
 {
 	const SKYPE = [
-		':+1:'    => '(y) ',
-		'![LGTM]' => '(y) ',
-		':bow:'   => '(bow) ',
+		':+1:'        => '(y) ',
+		'![LGTM]'     => '(y) ',
+		':bow:'       => '(bow) ',
+		':star:'      => '(*)',
+		':e-mail:'    => '(mail)',
+		':beer:'      => '(beer)',
+		':coffee:'    => '(ninja)',
+		':hourglass:' => '(waiting)',
+		':fire:'      => '(tumbleweed)',
 	];
 
 	public static function toSkype($str)
