@@ -298,9 +298,9 @@ class PRWatcher
 			break;
 		case SEND_MODE_SLACK:
 			\Githutil\Model\Slack\WebHooks::send(SLACK_API_URL, $message_body, [
-				channel    => SLACK_CHANNEL,
-				username   => SLACK_SHOW_NAME,
-				icon_emoji => SLACK_SHOW_ICON,
+				'channel'    => SLACK_CHANNEL,
+				'username'   => SLACK_SHOW_NAME,
+				'icon_emoji' => SLACK_SHOW_ICON,
 			]);
 			break;
 		}
