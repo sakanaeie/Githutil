@@ -21,6 +21,13 @@ class PRWatcher
 	const COMMENT_GET_FILE = 3;	// ファイルページのみ
 
 	/**
+	 * pull_request取得API用のオプション
+	 */
+	const GET_PULL_REQUEST_API_OPTIONS = [
+		'per_page' => 100,
+	];
+
+	/**
 	 * @var \Github\Client
 	 */
 	private $client;
@@ -75,7 +82,7 @@ class PRWatcher
 
 		$pr_arr = $this->client
 			->api('pull_request')
-			->all($this->repo_owner, $this->repo_name);
+			->all($this->repo_owner, $this->repo_name, self::GET_PULL_REQUEST_API_OPTIONS);
 
 		$pr_branch_name_arr   = array_column(array_column($pr_arr, 'head'), 'ref');
 		$pr_branch_name_arr[] = 'master';
@@ -111,7 +118,7 @@ class PRWatcher
 	{
 		$pr_arr = $this->client
 			->api('pull_request')
-			->all($this->repo_owner, $this->repo_name);
+			->all($this->repo_owner, $this->repo_name, self::GET_PULL_REQUEST_API_OPTIONS);
 
 		$return_arr = [];
 		foreach ($pr_arr as $pr) {
