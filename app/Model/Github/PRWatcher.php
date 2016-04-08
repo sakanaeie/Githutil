@@ -308,6 +308,7 @@ class PRWatcher
 				'channel'    => SLACK_CHANNEL,
 				'username'   => SLACK_SHOW_NAME,
 				'icon_emoji' => SLACK_SHOW_ICON,
+				'link_names' => 1,
 			]);
 			break;
 		}
