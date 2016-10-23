@@ -6,7 +6,6 @@ use Githutil\Model\Github\PRWatcher;
 
 class GithubController
 {
-
 	const BAR_AND_EOL = "------------------------------------------------------------\n";
 
 	/**
@@ -190,9 +189,13 @@ class GithubController
 				if (!isset($saved_comment_id_info[$type]) or false === array_search($content['id'], $saved_comment_id_info[$type])) {
 					// 保存済みでないとき
 					$is_deco = ($comment['is_new'] or $comment['is_decorate']);
-					$body .= $is_deco ? ':star: ' : ':e-mail: ';
-					$body .= sprintf("(+%s) %s (%s)\n", $comment['review_status'], mb_strimwidth($pr['title'], 0, 80, '...'), PRWatcher::convertUserName($pr['user']['login']));
-					$body .= $is_deco ? sprintf("%s\n", $pr['html_url']) : '' ;
+					$title   = mb_strimwidth($pr['title'], 0, 80, '...');
+
+					if (SEND_MODE === SEND_MODE_SLACK) {
+						$title = sprintf('<%s|%s>', $pr['html_url'], $title);
+					}
+
+					$body .= sprintf(":speech_balloon: (+%s) %s (%s)\n", $comment['review_status'], $title, PRWatcher::convertUserName($pr['user']['login']));
 					$body .= sprintf("%s (%s)\n", trim($content['body']), PRWatcher::convertUserName($content['user']['login']));
 					$body .= self::BAR_AND_EOL;
 				}

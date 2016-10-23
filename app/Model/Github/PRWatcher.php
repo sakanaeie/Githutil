@@ -155,6 +155,7 @@ class PRWatcher
 	 * PR内のファイルに対するもの、PR自体に対するもの、両方を取得しマージする
 	 *
 	 * @param  int   $pr_number  PR番号
+	 * @param  int   $mode       コメント取得モード
 	 * @return array $return_arr GithubAPI-Commentのレスポンスと、追加情報を含む配列
 	 */
 	public function getComments($pr_number, $mode = self::COMMENT_GET_ALL)
@@ -212,7 +213,7 @@ class PRWatcher
 					$review_status = 0;
 				}
 				if (1 === preg_match(GITHUB_PATTERN_SHOW_URL, $comment['body'])) {
-					$is_deco  = true;
+					$is_deco = true;
 				}
 			}
 			if (1 === preg_match(GITHUB_PATTERN_MEMO, $comment['body'])) {
